@@ -6,13 +6,29 @@
 </head>
 <body>
 
-<div id="collection">
-{{ collection }}
+<div>
+
+    <div class="flash_message">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class=flashes style="list-style: none;color: red;">
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+    </div>
+
 <h1>Sign Up Form</h1>
 <form name="signup_form" method="POST">
     <div>
-        {{ read.csrf_token }}
-        {{ read.read }}
+        {{ signup.csrf_token }}
+        {{ signup.name.label.text }}: {{ signup.name }}
+        {{ signup.email.label.text }}: {{ signup.email }}
+        {{ signup.password.label.text }}: {{ signup.password }}
+        {{ signup.confirm_password.label.text }}: {{ signup.confirm_password }}
+        {{ signup.signup }}
     </div>
 </form>
 
@@ -22,12 +38,13 @@
 <h1>Sign In Form</h1>
 <form name="signin_form" method="POST">
     <div>
-        {{ write.csrf_token }}
-        {{ write.name.label.text }}: {{ write.name }}
-        {{ write.email.label.text }}: {{ write.email }}
-        {{ write.write }}
+        {{ signin.csrf_token }}
+        {{ signin.email.label.text }}: {{ signin.email }}
+        {{ signin.password.label.text }}: {{ signin.password }}
+        {{ signin.signin }}
     </div>
 </form>
+
 </div>
 
 </body>
