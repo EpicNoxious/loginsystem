@@ -1,24 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Sign Up OR Sign In</title>
+
+<meta charset="UTF-8">
+<title>Sign Up OR Sign In</title>
+<style>
+    .turbo-flash{
+     animation:fadeout0.5s 1;
+    -webkit-animation:fadeout 0.5s 1;
+    animation-fill-mode: forwards;
+
+    animation-delay:2s;
+    -webkit-animation-delay:1s; /* Safari and Chrome */
+    -webkit-animation-fill-mode: forwards;
+
+}
+
+@keyframes fadeout{
+    from {opacity :1;}
+    to {opacity :0;}
+}
+
+@-webkit-keyframes fadeout{
+    from {opacity :1;}
+    to {opacity :0;}
+}
+</style>
+
+    {{ turbo() }}
 </head>
 <body>
 
-<div>
+{% extends "base.html" %}
 
-    <div class="flash_message">
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            <ul class=flashes style="list-style: none;color: red;">
-            {% for message in messages %}
-              <li>{{ message }}</li>
-            {% endfor %}
-            </ul>
-          {% endif %}
-        {% endwith %}
-    </div>
+{% block content %}
+
 
 <h1>Sign Up Form</h1>
 <form name="signup_form" method="POST">
@@ -43,9 +59,11 @@
         {{ signin.password.label.text }}: {{ signin.password }}
         {{ signin.signin }}
     </div>
-</form>
 
-</div>
+    <div class="form-text text-danger" id="name_error">{{ name_error }}</div>
+</form>
+{% endblock %}
+
 
 </body>
 </html>

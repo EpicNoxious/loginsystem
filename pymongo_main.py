@@ -12,23 +12,46 @@ db = client['practice']
 login = db.login
 
 
+@app.after_request
+def after_request(response):
+    # if the response has the turbo-stream content type, then append one more
+    # stream with the contents of the alert section of the page
+    if response.headers['Content-Type'].startswith(
+            'text/vnd.turbo-stream.html'):
+        print(1)
+        response.response.append(turbo.update(
+            render_template('alert.html'), 'alert').encode())
+        if response.content_length:
+            response.content_length += len(response.response[-1])
+    return response
+
+
 @app.route("/", methods=['GET', 'POST'])
 def index():
     signup = SignUp()
     signin = SignIn()
+    name_error = ''
     if signup.signup.data and signup.validate():
         print('Sign Up')
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
         confirm_password = request.form['confirm_password']
+        result = login.find_one({'email': email})
 
-        if password != confirm_password:
+        if result is not None:
+            flash("User already exists")
+
+        elif password != confirm_password:
             flash("Passwords don't match")
+
         else:
             dict = {'name': name, 'email': email, 'password': password, 'confirm_password': confirm_password}
             login.insert_one(dict)
             flash("User Added")
+
+        if turbo.can_stream():
+            return turbo.stream(turbo.update(name_error, 'name_error'))
 
     if signin.signin.data and signin.validate():
         print('Sign In')
@@ -38,9 +61,12 @@ def index():
         if data is None:
             flash("No such email exist")
         elif password != data['password']:
-            flash('Password is wrong')
+            flash("Incorrect Password")
         else:
             flash("User Logged In")
+
+        if turbo.can_stream():
+            return turbo.stream(turbo.update(name_error, 'name_error'))
 
     return render_template("sign_up_in.html", signup=signup, signin=signin)
 
