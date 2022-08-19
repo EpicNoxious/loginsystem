@@ -9,7 +9,7 @@ app.secret_key = 'Login System'
 cluster = "mongodb://localhost:27017"
 client = MongoClient(cluster)
 db = client['practice']
-login = db.login
+users = db.users
 
 
 @app.after_request
@@ -37,7 +37,7 @@ def index():
         email = request.form['email']
         password = request.form['password']
         confirm_password = request.form['confirm_password']
-        result = login.find_one({'email': email})
+        result = users.find_one({'email': email})
 
         if result is not None:
             flash("User already exists")
@@ -46,8 +46,8 @@ def index():
             flash("Passwords don't match")
 
         else:
-            dict = {'name': name, 'email': email, 'password': password, 'confirm_password': confirm_password}
-            login.insert_one(dict)
+            dict = {'name': name, 'email': email, 'password': password}
+            users.insert_one(dict)
             flash("User Added")
 
         if turbo.can_stream():
@@ -57,7 +57,7 @@ def index():
         print('Sign In')
         email = request.form['email']
         password = request.form['password']
-        data = login.find_one({'email': email})
+        data = users.find_one({'email': email})
         if data is None:
             flash("No such email exist")
         elif password != data['password']:
